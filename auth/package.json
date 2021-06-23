@@ -9,7 +9,7 @@
   },
   "jest": {
     "preset": "ts-jest",
-    "testEnvironment":"node",
+    "testEnvironment": "node",
     "setupFilesAfterEnv": [
       "./src/test/setup.ts"
     ]
@@ -37,5 +37,14 @@
     "mongodb-memory-server": "^6.9.6",
     "supertest": "^6.1.3",
     "ts-jest": "^27.0.3"
+  },
+  "config": {
+    "mongodbMemoryServer": {
+	"systemBinary": "/opt/homebrew/bin/mongod",
+	"arch": "x64",
+	"disablePostinstall": "1",
+	"debug": "0"
    }
+}
+  
 }
