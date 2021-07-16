@@ -15,6 +15,9 @@ spec:
       containers:
         - name: client
           image: dragonxsx/ticketing-client
+          env:
+            - name: NEXT_TELEMETRY_DISABLED
+              value: '1'
 ---
 apiVersion: v1
 kind: Service
