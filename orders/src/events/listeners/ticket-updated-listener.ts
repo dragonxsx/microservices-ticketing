@@ -8,10 +8,13 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEvent> {
     queueGroupName = queueGroupName;
 
     async onMessage(data: TicketUpdatedEvent['data'], msg: Message) {
-        const ticket = await Ticket.findById(data.id);
+        const ticket = await Ticket.findOne({
+            _id: data.id,
+            version: data.version - 1
+        });
 
         if(!ticket) {
-            throw new NotFoundError();
+            throw new Error('Ticket not found');
         }
 
         const {title, price} = data;
@@ -20,4 +23,4 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEvent> {
 
         msg.ack();
     }
-}
+}   
