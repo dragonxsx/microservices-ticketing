@@ -2,12 +2,16 @@ import {MongoMemoryServer} from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 
+// declare global {
+//     namespace NodeJS {
+//         interface Global {
+//             signin(): string;
+//         }
+//     }
+// }
+
 declare global {
-    namespace NodeJS {
-        interface Global {
-            signin(): string;
-        }
-    }
+    var signin: (id?: string) => string;
 }
 
 jest.mock('../nats-wrapper');
@@ -15,7 +19,7 @@ jest.mock('../nats-wrapper');
 let mongo: any;
 beforeAll(async() => {
     process.env.JWT_KEY = 'jwt123';
-    // jest.setTimeout(60*1000);
+    // jest.setTimeout(120*1000);
 
     mongo = new MongoMemoryServer();
     const mongoUri = await mongo.getUri();
