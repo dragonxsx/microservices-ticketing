@@ -35,6 +35,19 @@ const setup = async () => {
     return { listener, ticket, order, data, msg };
 };
 
+it('does not update the completed order', async () => {
+    const {listener, order, data, msg} = await setup();
+
+    order.set({status: OrderStatus.Complete});
+    await order.save();
+
+    await listener.onMessage(data, msg as Message);
+
+    const dbOrder = await Order.findById(order.id);
+    expect(dbOrder!.version).toEqual(order.version);
+    expect(dbOrder!.status).toEqual(OrderStatus.Complete);
+})
+
 it('updates the order status to cancelled', async () => {
     const {listener, order, data, msg} = await setup();
 
