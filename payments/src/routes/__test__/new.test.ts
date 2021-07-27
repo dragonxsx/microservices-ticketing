@@ -4,6 +4,7 @@ import request from 'supertest';
 import {app} from '../../app';
 import { Order } from '../../models/order';
 import { Payment } from '../../models/payment';
+import { natsWrapper } from '../../nats-wrapper';
 import {stripe} from '../../stripe';
 
 // jest.mock('../../stripe');
@@ -100,4 +101,29 @@ it('returns a 201 with valid inputs', async () => {
         stripeId: stripeCharge!.id
     });
     expect(payment).not.toBeNull();
+});
+
+it('emits payment created event', async () => {
+    const userId = mongoose.Types.ObjectId().toHexString();
+    const price = Math.floor(Math.random() * 100000);
+
+    const order = await Order.build({
+        id: mongoose.Types.ObjectId().toHexString(),
+        userId: userId,
+        version: 0,
+        price: price,
+        status: OrderStatus.Created
+    });
+    order.save();
+
+    await request(app)
+        .post('/api/payments')
+        .set('Cookie', global.signin(userId))
+        .send({
+            token: 'tok_visa',
+            orderId: order.id
+        })
+        .expect(201);
+
+    expect(natsWrapper.client.publish).toHaveBeenCalled();
 });
